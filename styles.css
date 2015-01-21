@@ -1,0 +1,24 @@
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  margin: 1em;
+  background: #293950;
+  color: #ecf0f0;
+}
+
+section {
+  margin: 0 auto;
+}
+
+h1 {
+  font-weight: normal;
+  font-size: 2.4em;
+  margin-bottom: 0;
+}
+
+a {
+  color: gold;
+}
+
+.chile {fill: #DF4949; background: #DF4949;}
+.croatia {fill: #E27A3F; background: #E27A3F;}
+.brazil { fill: #EFC94C; background: #EFC94C;}
