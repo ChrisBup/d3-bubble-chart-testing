@@ -13,16 +13,52 @@ var vis = d3.select("#embed").append("svg")
   .attr("class", "pack")
   .append("g");
 
-
 d3.csv("data/country-data-test.csv", function(error, csvData) {
+
+//  try {
+//    computeError();
+//  } catch (e) {
+//    console.log(e);
+//    return
+//  }
+
+  console.log(csvData);
 
   if (error) {
 
         console.log(error);
+        // return error;
+        // throw error;
 
   } else {
 
-    var data = { name: "parent", children: csvData };
+    // Parse the CSV file
+    var csvRows = [];
+    csvData.forEach(function(row) {
+      csvRows.push({
+        country: row.country,
+        percentage: +row.percentage // parseInt(row.percentage, 10)
+        // date: new Date(row.date)
+      });
+    });
+
+    var data = { name: "parent", children: csvRows };
+//  var data = { name: "parent", children: csvData };
+
+    console.log(data);
+
+    // {
+    //   name: 'parent',
+    //   children: [
+    //    {country: 'Chile', percentage: '100'},
+    //    {country: 'Brazil', percentage: '200'}
+    //   ]
+    //}
+    //
+    // children: [
+    //  {Chile: 100},
+    //  {Brazil: 200}
+    // ]
 
     var node = vis.data([data]).selectAll("circle")
       .data(pack.nodes)
