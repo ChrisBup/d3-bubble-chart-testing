@@ -60,6 +60,9 @@ d3.csv("data/country-data-test.csv", function(error, csvData) {
     //  {Brazil: 200}
     // ]
 
+    var nodes = bubble.nodes(processData(data))
+          .filter(function(d) { return !d.children; });
+
     var node = vis.data([data]).selectAll("circle")
       .data(pack.nodes)
       .enter().append("circle")
@@ -73,6 +76,6 @@ d3.csv("data/country-data-test.csv", function(error, csvData) {
 
   }
 
-  console.log(data);
+  console.log(csvData);
 
 });

@@ -19,9 +19,6 @@
 
       } else {
 
-        var nodes = bubble.nodes(processData(data))
-          .filter(function(d) { return !d.children; });
-
         var vis = svg.selectAll('circle')
           .data(nodes);
 
