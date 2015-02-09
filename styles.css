@@ -15,10 +15,21 @@ h1 {
   margin-bottom: 0;
 }
 
+svg text {
+  font-family: 'Monaco', sans-serif;
+  font-size: 100%;
+}
+
+svg text tspan {
+  font-size: 100%;
+}
+
 a {
   color: gold;
 }
 
+/*
 .chile {fill: #DF4949; background: #DF4949;}
 .croatia {fill: #E27A3F; background: #E27A3F;}
 .brazil { fill: #EFC94C; background: #EFC94C;}
+*/

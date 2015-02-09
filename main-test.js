@@ -1,69 +1,99 @@
-(function() {
+console.log("--------- start at", new Date().toLocaleTimeString(),"---------")
 
-  var diameter = 500;
+d3.select(".vis-title").text("D3 Static Data Bubble Chart");
 
-  var svg = d3.select("#embed").append("svg")
-    .attr("width", diameter)
-    .attr("height", diameter);
+var diameter = 500,
+  format = d3.format(",d"),
+  color = d3.scale.category20c();
 
-  var bubble = d3.layout.pack()
-    .size([diameter, diameter])
-    .value(function(d) {return d.size;})
-    .padding(5);
+var pack = d3.layout.pack()
+  .size([diameter, diameter])
+  .sort(null)
+  .padding(5)
+  .value(function(d) {
+    console.log("getting node value for", d.country, "of", d.percentage);
+    return d.percentage;
+  });
 
-    d3.csv("data/country-data.csv", function(error, data) {
+var vis = d3.selectAll("#embed").append("svg")
+  .attr("width", diameter)
+  .attr("height", diameter)
+  .attr("class", "pack")
+  .append("g");
 
-      if (error) {
+d3.csv("data/country-data-test.csv", null, function(error, csvData) {
 
-        console.log(error);
+  console.log("csvData:", JSON.stringify(csvData));
 
-      } else {
+  if (error) {
+    console.log("ERROR:", error);
+  } else {
 
-        var vis = svg.selectAll('circle')
-          .data(nodes);
-
-        vis.enter().append('circle')
-          .attr('transform', function(d) { return 'translate(' + d.x + ',' + d.y + ')'; })
-          .attr('r', function(d) { return d.r; })
-          .attr('class', function(d) { return d.className; });
-
-        var nameLabel = vis.enter().append("text")
-          .html(function(d) {
-            return d.name;
-          })
-          .attr("text-anchor", "middle")
-          .attr("x", function(d) { return d.x; })
-          .attr("y", function(d) { return d.y; })
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "12px")
-          .attr("fill", "white");
-
-        var valueLabel = vis.enter().append("text")
-          .html(function(d) {
-            return d.value;
-          })
-          .attr("text-anchor", "middle")
-          .attr("x", function(d) { return d.x; })
-          .attr("y", function(d) { return d.y; })
-          .attr("dx", 0)
-          .attr("dy", 14)
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "12px")
-          .attr("fill", "white");
-
-        function processData(data) {
-          var obj = data;
-
-          var newDataSet = [];
-
-          for(var prop in obj) {
-            newDataSet.push({name: prop, className: prop.toLowerCase(), size: obj[prop]});
-          }
-          return {children: newDataSet};
-        }
-
-      }
-
+    // Parse the CSV file
+    var csvRows = [];
+    csvData.forEach(function(row) {
+      csvRows.push({
+        question: +row.question,  // JSE ADDED
+        country: row.country,
+        percentage: +row.percentage, // parseInt(row.percentage, 10)
+        color: row.color
+        // date: new Date(row.date)
+      });
     });
 
-})();
+    var data = { name: "parent", children: csvRows };
+
+    console.log("data:", JSON.stringify(data));
+
+    console.log("pack.nodes", pack.nodes);
+    console.log("pack.nodes(data)", pack.nodes(data));
+
+    var packedNodes = pack.nodes(data); // .slice(1);
+    // debugger;
+    console.log("packedNodes", packedNodes);
+
+    var node = vis.selectAll("circle")
+      .data(packedNodes)
+      .enter().append("circle")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .attr("r", function(d) { return d.r; })
+      .style("fill", function(d, i) {
+        //return color(d.depth);
+        return i ? d.color : "#ff0000";
+        // return color(d.question);
+      })
+      .style("fill-opacity", function(d,i){
+        return i ? 1.0 : 0.0;
+      });
+
+    var fruitSister = d3.scale.category10();
+
+    var text = vis.selectAll("text")
+      .data(packedNodes)
+      .enter().append("text")
+      .attr("fill", function(d) {
+        return d3.rgb(fruitSister(d.question)).brighter(1.4);
+        //console.log("color(d.question):", color(d.question),"d3.rgb(color(d.question)):", d3.rgb(color(d.question)));
+        return d3.rgb(color(d.question)).darker(2.5);
+      })
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .attr('text-anchor', 'middle')
+      .text(function(d){ return d.country; });
+
+    text
+      .append("tspan")
+      .text(function(d,i){
+        return "// " + d.percentage;
+      })
+      .attr("x", 0)
+      .attr("dy", 27)
+      .style("fill-opacity", function(d,i){
+        return i ? 1.0 : 0.0;
+      });
+
+    node.append("title")
+      .text(function(d) { return d.country + ": " + format(d.percentage); });
+  }
+
+});
